@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext } from "react";
 import { ethers } from "ethers";
-import { contractABI, contractAddres } from "../utils/constants";
+import { contractABI, contractAddress } from "../utils/constants";
 
 export const TransactionContext = createContext();
 
@@ -10,7 +10,7 @@ const getEthereumContract = () => {
   const provider = new ethers.providers.Web3Provider(ethereum);
   const signer = provider.getSigner();
   const transactionContract = new ethers.Contract(
-    contractAddres,
+    contractAddress,
     contractABI,
     signer
   );
@@ -19,6 +19,7 @@ const getEthereumContract = () => {
 };
 
 export const TransactionProvider = ({ children }) => {
+  const [transactions, setTransactions] = useState([]);
   const [transactionCount, setTransactionCount] = useState(
     localStorage.getItem("transactionCount")
   );
@@ -35,6 +36,33 @@ export const TransactionProvider = ({ children }) => {
     setFormData({ ...formData, [name]: e.target.value });
   };
 
+  const getAllTransactions = async () => {
+    try {
+      if (!ethereum) return alert("Please install MetaMask");
+
+      const transactionContract = getEthereumContract();
+
+      const availableTransactions =
+        await transactionContract.getAllTransactions();
+
+      const structuredTransactions = availableTransactions.map(
+        (transaction) => ({
+          addressTo: transaction.receiver,
+          addressFrom: transaction.sender,
+          timestamp: new Date(
+            transaction.timestamp.toNumber() * 1000
+          ).toLocaleString("en-US"),
+          message: transaction.message,
+          keyword: transaction.keyword,
+          amount: parseInt(transaction.amount._hex) / 10 ** 18,
+        })
+      );
+      setTransactions(structuredTransactions);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const checkIfWalletIsConnected = async () => {
     try {
       if (!ethereum) return alert("Please install MetaMask");
@@ -43,10 +71,22 @@ export const TransactionProvider = ({ children }) => {
 
       if (accounts.length) {
         setCurrentAccount(accounts[0]);
+        getAllTransactions();
       } else {
         console.log("no accounts found");
       }
-      console.log(accounts);
+    } catch (error) {
+      console.log(error);
+      throw new Error("No Ethereum object");
+    }
+  };
+
+  const checkIfTransactionsExist = async () => {
+    try {
+      const transactionContract = getEthereumContract();
+      const transactionCount = await transactionContract.getTransactionCount();
+
+      window.localStorage.setItem("transactionCount", transactionCount);
     } catch (error) {
       console.log(error);
       throw new Error("No Ethereum object");
@@ -62,7 +102,7 @@ export const TransactionProvider = ({ children }) => {
       setCurrentAccount(accounts[0]);
     } catch (error) {
       console.log(error);
-      throw new Error("No Ethereum object");
+      throw new Error("No Ethereum object!");
     }
   };
 
@@ -73,7 +113,6 @@ export const TransactionProvider = ({ children }) => {
       const { addressTo, amount, keyword, message } = formData;
       const transactionContract = getEthereumContract();
       const parsedAmount = ethers.utils.parseEther(amount);
-      console.log(parsedAmount._hex);
 
       await ethereum.request({
         method: "eth_sendTransaction",
@@ -102,6 +141,8 @@ export const TransactionProvider = ({ children }) => {
       const numberOfTransactions =
         await transactionContract.getTransactionCount();
       setTransactionCount(numberOfTransactions.toNumber());
+
+      window.reload(); // !needs to be addressed later
     } catch (error) {
       console.log(error);
       throw new Error("No Ethereum object");
@@ -110,6 +151,7 @@ export const TransactionProvider = ({ children }) => {
 
   useEffect(() => {
     checkIfWalletIsConnected();
+    checkIfTransactionsExist();
   }, []);
 
   return (
@@ -121,6 +163,8 @@ export const TransactionProvider = ({ children }) => {
         setFormData,
         handleChange,
         sendTransaction,
+        transactions,
+        isLoading,
       }}
     >
       {children}

@@ -5,7 +5,7 @@ import { shortenAddress } from "../utils/shortenAddress";
 import useFetch from "../hooks/useFetch";
 
 const Transactions = () => {
-  const { currentAccount } = useContext(TransactionContext);
+  const { currentAccount, transactions } = useContext(TransactionContext);
 
   const TransactionCard = ({
     addressTo,
@@ -16,7 +16,7 @@ const Transactions = () => {
     amount,
     url,
   }) => {
-    const { gifUrl } = useFetch({ keyword });
+    const gifUrl = useFetch({ keyword });
 
     return (
       <div
@@ -86,7 +86,7 @@ const Transactions = () => {
           </h3>
         )}
         <div className="flex flex-wrap justify-center items-center mt-10">
-          {dummyData.reverse().map((transaction, index) => (
+          {transactions.reverse().map((transaction, index) => (
             <TransactionCard key={index} {...transaction} />
           ))}
         </div>
