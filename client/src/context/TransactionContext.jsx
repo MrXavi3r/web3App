@@ -19,6 +19,7 @@ const getEthereumContract = () => {
 };
 
 export const TransactionProvider = ({ children }) => {
+  const [toastList, setToastList] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [transactionCount, setTransactionCount] = useState(
     localStorage.getItem("transactionCount")
@@ -142,9 +143,28 @@ export const TransactionProvider = ({ children }) => {
         await transactionContract.getTransactionCount();
       setTransactionCount(numberOfTransactions.toNumber());
 
-      window.reload(); // !needs to be addressed later
+      // toast notification
+      const toastSuccess = {
+        type: "success",
+        title: "Transaction Success",
+        message: "Transaction was sent successfully!",
+      };
+      setToastList([...toastList, toastSuccess]);
+
+      //reset Form
+      setFormData({
+        addressTo: "",
+        amount: "",
+        keyword: "",
+        message: "",
+      });
     } catch (error) {
-      console.log(error);
+      const toastError = {
+        type: "error",
+        title: "Transaction Failed",
+        message: error.message || "Transaction failed. Please try again.",
+      };
+      setToastList([...toastList, toastError]);
       throw new Error("No Ethereum object");
     }
   };
@@ -152,7 +172,7 @@ export const TransactionProvider = ({ children }) => {
   useEffect(() => {
     checkIfWalletIsConnected();
     checkIfTransactionsExist();
-  }, []);
+  }, [transactionCount]);
 
   return (
     <TransactionContext.Provider
@@ -165,6 +185,8 @@ export const TransactionProvider = ({ children }) => {
         sendTransaction,
         transactions,
         isLoading,
+        toastList,
+        setToastList,
       }}
     >
       {children}

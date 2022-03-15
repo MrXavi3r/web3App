@@ -1,5 +1,4 @@
 import React from "react";
-import { IoIosClose } from "react-icons/io";
 
 const Toast = ({ options }) => {
   return (
@@ -36,15 +35,7 @@ const Toast = ({ options }) => {
           {options?.title || "Message"}
         </p>
         <div className="flex items-center">
-          <p className="text-white opacity-90 text-xs">11 mins ago</p>
-          <button
-            type="button"
-            className="btn-close btn-close-white box-content w-4 h-4 ml-2 text-white flex items-center justify-center border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-white hover:opacity-75 hover:no-underline"
-            data-mdb-dismiss="toast"
-            aria-label="Close"
-          >
-            <IoIosClose color="#fff" fontSize={21} />
-          </button>
+          <p className="text-white opacity-90 text-xs">just now</p>
         </div>
       </div>
       <div
