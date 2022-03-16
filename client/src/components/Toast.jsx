@@ -3,7 +3,7 @@ import React from "react";
 const Toast = ({ options }) => {
   return (
     <div
-      className=" bg-blue-600 shadow-lg mx-auto w-96 max-w-full text-sm pointer-events-auto bg-clip-padding rounded-lg block ml-5 mb-3"
+      className=" bg-blue-600 shadow-lg mx-auto w-96 max-w-full text-sm pointer-events-auto bg-clip-padding rounded-lg block ml-5 mb-3 animate-slide-in-left"
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
