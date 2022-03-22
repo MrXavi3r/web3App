@@ -6,7 +6,6 @@ import useFetch from "../hooks/useFetch";
 
 const Transactions = () => {
   const { currentAccount, transactions } = useContext(TransactionContext);
-
   const TransactionCard = ({
     addressTo,
     addressFrom,
@@ -86,7 +85,7 @@ const Transactions = () => {
           </h3>
         )}
         <div className="flex flex-wrap justify-center items-center mt-10">
-          {transactions.reverse().map((transaction, index) => (
+          {transactions.map((transaction, index) => (
             <TransactionCard key={index} {...transaction} />
           ))}
         </div>

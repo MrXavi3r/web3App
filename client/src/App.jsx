@@ -10,17 +10,7 @@ import {
 import { TransactionContext } from "./context/TransactionContext";
 
 const App = () => {
-  const { toastList, setToastList } = useContext(TransactionContext);
-
-  //handle closing of toast messages
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setToastList((toastList) =>
-        toastList.filter((_, i) => i !== toastList.length - 1)
-      );
-    }, 8000);
-    return () => clearTimeout(timer);
-  }, [toastList]);
+  const { toastList } = useContext(TransactionContext);
 
   return (
     <div className="min-h-screen">

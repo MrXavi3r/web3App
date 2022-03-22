@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { TransactionContext } from "../context/TransactionContext";
 
 const Toast = ({ options }) => {
+  const { toastList, setToastList } = useContext(TransactionContext);
+
+  // handle closing of toast messages
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setToastList((toastList) =>
+        toastList.filter((_, i) => i !== toastList.length - 1)
+      );
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [toastList]);
+
   return (
     <div
       className=" bg-blue-600 shadow-lg mx-auto w-96 max-w-full text-sm pointer-events-auto bg-clip-padding rounded-lg block ml-5 mb-3 animate-slide-in-left"
